@@ -1,0 +1,44 @@
+<div class="modulo-contenedor">
+  <div class="cabecera-modulo">
+    <div class="textos-cabecera">
+      <h2>Recursos Humanos</h2>
+    </div>
+    <button class="btn-primario-cafe" (click)="agregarEmpleado()">+ Agregar empleado</button>
+  </div>
+
+  <div class="seccion-tabla">
+    <div class="contenedor-tabla">
+      <table class="tabla-datos">
+        <thead>
+          <tr>
+            <th>Empleado</th>
+            <th>Puesto</th>
+            <th>Salario</th>
+            <th>Turno asignado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (emp of empleados; track emp.id) {
+            <tr>
+              <td>{{ emp.nombre }}</td>
+              <td>{{ emp.puesto }}</td>
+              <td>{{ emp.salario }}</td>
+              <td>{{ emp.turno }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="seccion-calendario">
+    <h4>Calendario del mes</h4>
+    <div class="dias-contenedor">
+      @for (dia of diasCalendario; track dia.numero) {
+        <div class="dia {{ dia.activo ? 'activo' : '' }}">
+          {{ dia.numero }}
+        </div>
+      }
+    </div>
+  </div>
+</div>

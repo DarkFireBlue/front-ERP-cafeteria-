@@ -1,0 +1,54 @@
+<div class="modulo-contenedor">
+  <div class="cabecera-modulo">
+    <div class="textos-cabecera">
+      <h2>Ventas y Facturación</h2>
+    </div>
+    <button class="btn-primario-cafe" (click)="nuevaVenta()">+ Nueva venta</button>
+  </div>
+
+  <div class="tarjetas-resumen">
+    <div class="tarjeta-blanca">
+      <h3>{{ resumen.ventasHoy }}</h3>
+      <span>Ventas hoy</span>
+    </div>
+    <div class="tarjeta-blanca">
+      <h3>{{ resumen.totalDia }}</h3>
+      <span>Total del día</span>
+    </div>
+    <div class="tarjeta-blanca">
+      <h3>{{ resumen.ivaAcumulado }}</h3>
+      <span>IVA acumulado</span>
+    </div>
+  </div>
+
+  <div class="seccion-tabla">
+    <div class="contenedor-tabla">
+      <table class="tabla-datos">
+        <thead>
+          <tr>
+            <th>Folio</th>
+            <th>Cliente</th>
+            <th>Canal</th>
+            <th>Total</th>
+            <th>IVA</th>
+            <th>Factura XML</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of ventas; track item.folio) {
+            <tr>
+              <td>{{ item.folio }}</td>
+              <td>{{ item.cliente }}</td>
+              <td>{{ item.canal }}</td>
+              <td>{{ item.total }}</td>
+              <td>{{ item.iva }}</td>
+              <td>
+                <span class="etiqueta {{ item.claseEstado }}">{{ item.estadoFactura }}</span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

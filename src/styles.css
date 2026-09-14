@@ -1,0 +1,64 @@
+/* Estilos globales de ERPcafeteria */
+
+:root {
+  --color-fondo: #f6f1e8;
+  --color-superficie: #ffffff;
+  --color-oscuro: #2b1d15;
+  --color-oscuro-suave: #3d2b1f;
+  --color-acento: #b5702f;
+  --color-acento-oscuro: #96592a;
+  --color-acento-suave: #f1ddc4;
+  --color-texto: #33261d;
+  --color-texto-suave: #8a7a6a;
+  --color-borde: #e8dfd0;
+  --color-exito: #3f7d54;
+  --color-exito-fondo: #e5f2e8;
+  --color-exito-borde: #c9e4cf;
+  --color-alerta: #c17a3e;
+  --color-alerta-fondo: #fbead9;
+  --color-alerta-borde: #f0d3ad;
+  --radio-chico: 8px;
+  --radio: 14px;
+  --sombra-suave: 0 4px 14px rgba(43, 29, 21, 0.06);
+  --sombra-media: 0 10px 28px rgba(43, 29, 21, 0.12);
+  --fuente-titulos: 'Poppins', 'Segoe UI', sans-serif;
+  --fuente-texto: 'Inter', 'Segoe UI', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--fuente-texto);
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: var(--fuente-titulos);
+}
+
+button {
+  font-family: var(--fuente-texto);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-borde);
+  border-radius: 20px;
+}

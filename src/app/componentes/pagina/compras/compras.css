@@ -1,0 +1,108 @@
+.textos-cabecera h2 {
+  font-size: 23px;
+  color: var(--color-texto);
+  margin: 0 0 4px 0;
+}
+
+.textos-cabecera p {
+  font-size: 13px;
+  color: var(--color-texto-suave);
+  margin: 0;
+}
+
+.btn-primario-cafe {
+  background-color: var(--color-acento);
+  color: white;
+  border: none;
+  padding: 11px 20px;
+  border-radius: 22px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  box-shadow: var(--sombra-suave);
+  transition: background-color 0.2s, transform 0.15s;
+}
+
+.btn-primario-cafe:hover {
+  background-color: var(--color-acento-oscuro);
+  transform: translateY(-1px);
+}
+
+.grid-productos {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.tarjeta-producto {
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--sombra-suave);
+  transition: transform 0.15s;
+}
+
+.tarjeta-producto:hover {
+  transform: translateY(-2px);
+}
+
+.placeholder-imagen {
+  background-color: var(--color-fondo);
+  border: 1px dashed var(--color-borde);
+  border-radius: var(--radio-chico);
+  height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--color-texto-suave);
+  gap: 8px;
+}
+
+.placeholder-imagen span {
+  font-size: 13px;
+}
+
+.placeholder-imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radio-chico);
+}
+
+.info-producto h4 {
+  font-size: 15px;
+  color: var(--color-texto);
+  margin: 0 0 4px 0;
+}
+
+.info-producto p {
+  font-size: 12px;
+  color: var(--color-texto-suave);
+  margin: 0;
+}
+
+.precio-estado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.precio-estado .precio {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-acento-oscuro);
+}
+
+.etiqueta {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid;
+}

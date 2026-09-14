@@ -1,0 +1,45 @@
+@if (mostrarLayout()) {
+  <div class="layout-principal">
+    
+    <header class="encabezado-superior">
+      <div class="logo-titulo">
+        <h1>ERPcafeteria</h1>
+      </div>
+      <button class="btn-salir" (click)="cerrarSesion()">Salir</button>
+    </header>
+
+    <div class="cuerpo-principal">
+      <aside class="sidebar">
+        <nav class="navegacion">
+          <a routerLink="/dashboard" routerLinkActive="activo" class="nav-item">
+            Panel principal
+          </a>
+          <a routerLink="/finanzas" routerLinkActive="activo" class="nav-item">
+            Contabilidad y Finanzas
+          </a>
+          <a routerLink="/inventario" routerLinkActive="activo" class="nav-item">
+            Gestión de Inventario
+          </a>
+          <a routerLink="/ventas" routerLinkActive="activo" class="nav-item">
+            Ventas y Facturación
+          </a>
+          <a routerLink="/compras" routerLinkActive="activo" class="nav-item">
+            Compras
+          </a>
+          <a routerLink="/rh" routerLinkActive="activo" class="nav-item">
+            Recursos Humanos
+          </a>
+        </nav>
+      </aside>
+
+      <main class="area-trabajo">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
+    
+  </div>
+} @else {
+  <div class="pantalla-sesion-contenedor">
+    <router-outlet></router-outlet>
+  </div>
+}

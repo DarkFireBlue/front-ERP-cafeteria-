@@ -1,0 +1,132 @@
+:host {
+  font-family: var(--fuente-texto);
+}
+
+.layout-principal {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  margin: -8px;
+  overflow: hidden;
+}
+
+.encabezado-superior {
+  height: 64px;
+  background-color: var(--color-oscuro);
+  color: #f5ede3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 28px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  z-index: 20;
+  border-bottom: 3px solid var(--color-acento);
+}
+
+.icono-cafe {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(181, 112, 47, 0.25);
+  border-radius: 50%;
+  color: var(--color-acento-suave);
+}
+
+.logo-titulo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo-titulo h1 {
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: 0.4px;
+}
+
+.btn-salir {
+  background-color: transparent;
+  color: #f5ede3;
+  border: 1px solid rgba(245, 237, 227, 0.35);
+  padding: 8px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.btn-salir:hover {
+  background-color: rgba(245, 237, 227, 0.12);
+  border-color: var(--color-acento);
+}
+
+.cuerpo-principal {
+  display: flex;
+  flex: 1;
+  background-color: var(--color-fondo);
+  height: calc(100vh - 64px);
+}
+
+.sidebar {
+  width: 264px;
+  background-color: var(--color-oscuro-suave);
+  display: flex;
+  flex-direction: column;
+  padding: 18px 0;
+}
+
+.navegacion {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 14px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 16px;
+  text-decoration: none;
+  color: rgba(245, 237, 227, 0.72);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--radio-chico);
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.nav-item:hover {
+  background-color: rgba(245, 237, 227, 0.08);
+  color: #f5ede3;
+}
+
+.nav-item.activo {
+  background-color: var(--color-acento);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: var(--sombra-suave);
+}
+
+.icono {
+  width: 19px;
+  height: 19px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.75;
+}
+
+.nav-item.activo .icono,
+.nav-item:hover .icono {
+  opacity: 1;
+}
+
+.area-trabajo {
+  flex: 1;
+  padding: 32px 36px;
+  overflow-y: auto;
+}

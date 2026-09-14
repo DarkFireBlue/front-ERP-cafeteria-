@@ -1,0 +1,90 @@
+.dashboard-contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.cabecera-dashboard h2 {
+  font-size: 25px;
+  color: var(--color-texto);
+  margin: 0 0 6px 0;
+}
+
+.cabecera-dashboard p {
+  font-size: 14.5px;
+  color: var(--color-texto-suave);
+  margin: 0;
+}
+
+
+.tarjeta {
+  background-color: var(--color-superficie);
+  padding: 20px 20px 18px;
+  flex: 1;
+  min-width: 170px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.tarjeta:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--sombra-media);
+}
+
+.icono-tarjeta {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: var(--color-acento-suave);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.icono-tarjeta img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.tarjeta h3 {
+  font-size: 14.5px;
+  color: var(--color-texto);
+  margin: 0 0 4px 0;
+  font-weight: 600;
+}
+
+.subtitulo {
+  font-size: 11.5px;
+  color: var(--color-texto-suave);
+  margin: 0 0 16px 0;
+  border-bottom: 1px solid var(--color-borde);
+  padding-bottom: 14px;
+}
+
+.metricas {
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.dato h4 {
+  font-size: 16px;
+  color: var(--color-acento-oscuro);
+  margin: 0 0 2px 0;
+}
+
+.dato span {
+  font-size: 11px;
+  color: var(--color-texto-suave);
+}
+
+.dato.alerta h4 {
+  color: var(--color-alerta);
+}
+
+.dato.alerta span {
+  color: var(--color-texto-suave);
+}

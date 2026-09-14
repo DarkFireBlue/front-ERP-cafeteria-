@@ -1,0 +1,52 @@
+<div class="pantalla-autenticacion">
+  <header class="auth-header">
+    <span>ERPcafeteria</span>
+  </header>
+
+  <div class="auth-contenido">
+    <div class="tarjeta-auth">
+
+      <div class="panel-lateral">
+        <h2>{{ !mostrarRegistro ? 'Bienvenido' : 'Registrate' }}</h2>
+        <p>{{ !mostrarRegistro ? 'Administra pedidos, inventario y personal del negocio.' : 'Crea una cuenta para poder acceder a la página.' }}</p>
+      </div>
+
+      <div class="panel-formulario">
+      <div class="auth-cabecera">
+        <h2>{{ !mostrarRegistro ? 'Inicio de Sesión' : 'Crear Cuenta' }}</h2>
+        <p>{{ !mostrarRegistro ? 'Accede con tu cuenta de administrador o empleado' : 'Registra una nueva cuenta' }}</p>
+      </div>
+      
+      <form class="auth-formulario" (submit)="$event.preventDefault()">
+        @if (mostrarRegistro) {
+          <div class="auth-grupo">
+            <label>Nombre completo</label>
+            <input type="text" placeholder="ejemplo">
+          </div>
+        }
+
+        <div class="auth-grupo">
+          <label>{{ !mostrarRegistro ? 'Correo' : 'Correo electrónico' }}</label>
+          <input type="email" [placeholder]="!mostrarRegistro ? 'ejemplo@ejemplo.com' : 'ejemplo@ejemplo.com'">
+        </div>
+        
+        <div class="auth-grupo">
+          <label>Contraseña</label>
+          <input type="password" placeholder="••••••••">
+        </div>
+        
+        <button type="submit" class="btn-auth" [routerLink]="!mostrarRegistro ? '/dashboard' : null">
+          {{ !mostrarRegistro ? 'Iniciar Sesión' : 'Crear Cuenta' }}
+        </button>
+      </form>
+      
+      <div class="auth-enlace">
+        <a href="#" (click)="alternarVista(); $event.preventDefault()">
+          {{ !mostrarRegistro ? 'Regístrate aquí' : 'Inicia sesión' }}
+        </a>
+      </div>
+      </div>
+
+    </div>
+  </div>
+</div>

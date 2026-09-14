@@ -1,0 +1,37 @@
+<div class="modulo-contenedor">
+  <div class="cabecera-modulo">
+    <div class="textos-cabecera">
+      <h2>Gestión de Inventario</h2>
+    </div>
+    <button class="btn-primario-cafe" (click)="agregarProducto()">+ Agregar producto</button>
+  </div>
+
+  <div class="seccion-tabla">
+    <div class="contenedor-tabla">
+      <table class="tabla-datos">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Categoría</th>
+            <th>Cantidad</th>
+            <th>Precio unitario</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of productos; track item.id) {
+            <tr>
+              <td>{{ item.producto }}</td>
+              <td>{{ item.categoria }}</td>
+              <td>{{ item.cantidad }}</td>
+              <td>{{ item.precioUnitario }}</td>
+              <td>
+                <span class="etiqueta {{ item.claseEstado }}">{{ item.estado }}</span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
