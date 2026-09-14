@@ -12,22 +12,22 @@
         <thead>
           <tr>
             <th>Producto</th>
-            <th>Categoría</th>
+            <th>Descripción</th>
             <th>Cantidad</th>
             <th>Precio unitario</th>
-            <th>Estado</th>
           </tr>
         </thead>
         <tbody>
           @for (item of productos; track item.id) {
             <tr>
-              <td>{{ item.producto }}</td>
-              <td>{{ item.categoria }}</td>
-              <td>{{ item.cantidad }}</td>
-              <td>{{ item.precioUnitario }}</td>
-              <td>
-                <span class="etiqueta {{ item.claseEstado }}">{{ item.estado }}</span>
-              </td>
+              <td>{{ item.nombre || item.producto }}</td>
+              <td>{{ item.descripcion }}</td>
+              <td>{{ item.stock ?? item.cantidad }}</td>
+              <td>${{ item.precio || item.precioUnitario }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" style="text-align: center;">Cargando datos o tabla vacía...</td>
             </tr>
           }
         </tbody>
