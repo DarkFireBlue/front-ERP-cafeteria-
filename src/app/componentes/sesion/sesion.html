@@ -7,46 +7,168 @@
     <div class="tarjeta-auth">
 
       <div class="panel-lateral">
-        <h2>{{ !mostrarRegistro ? 'Bienvenido' : 'Registrate' }}</h2>
-        <p>{{ !mostrarRegistro ? 'Administra pedidos, inventario y personal del negocio.' : 'Crea una cuenta para poder acceder a la página.' }}</p>
+        <h2>{{ !mostrarRegistro ? 'Bienvenido' : 'Regístrate' }}</h2>
+        <p>{{ !mostrarRegistro ? 'Administra pedidos, inventario y personal del negocio.' : 'Crea una cuenta para poder acceder a la plataforma.' }}</p>
       </div>
 
       <div class="panel-formulario">
-      <div class="auth-cabecera">
-        <h2>{{ !mostrarRegistro ? 'Inicio de Sesión' : 'Crear Cuenta' }}</h2>
-        <p>{{ !mostrarRegistro ? 'Accede con tu cuenta de administrador o empleado' : 'Registra una nueva cuenta' }}</p>
-      </div>
-      
-      <form class="auth-formulario" (submit)="$event.preventDefault()">
-        @if (mostrarRegistro) {
-          <div class="auth-grupo">
-            <label>Nombre completo</label>
-            <input type="text" placeholder="ejemplo">
+        <div class="auth-cabecera">
+          <h2>{{ !mostrarRegistro ? 'Inicio de Sesión' : 'Crear Cuenta' }}</h2>
+          <p>{{ !mostrarRegistro ? 'Accede con tu cuenta de administrador, empleado o cliente' : 'Registra una nueva cuenta de cliente' }}</p>
+        </div>
+        
+        @if (mensajeError) {
+          <div class="alerta-error">
+            {{ mensajeError }}
           </div>
         }
 
-        <div class="auth-grupo">
-          <label>{{ !mostrarRegistro ? 'Correo' : 'Correo electrónico' }}</label>
-          <input type="email" [placeholder]="!mostrarRegistro ? 'ejemplo@ejemplo.com' : 'ejemplo@ejemplo.com'">
-        </div>
+        <!-- FORMULARIO DE INICIO DE SESIÓN -->
+        @if (!mostrarRegistro) {
+          <form class="auth-formulario" [formGroup]="loginForm" (ngSubmit)="enviarFormulario()">
+            <div class="auth-grupo">
+              <label>Correo</label>
+              <input type="email" formControlName="correo" placeholder="ejemplo@ejemplo.com">
+            </div>
+            
+            <div class="auth-grupo">
+              <label>Contraseña</label>
+              <input type="password" formControlName="contrasena" placeholder="••••••••">
+            </div>
+            
+            <button type="submit" class="btn-auth" [disabled]="cargando || loginForm.invalid">
+              {{ cargando ? 'Verificando...' : 'Iniciar Sesión' }}
+            </button>
+          </form>
+        }
+
+        <!-- FORMULARIO DE REGISTRO (CREAR CUENTA) -->
+        @if (mostrarRegistro) {
+          <form class="auth-formulario" [formGroup]="registroForm" (ngSubmit)="enviarFormulario()">
+            <div class="auth-grupo">
+              <label>Nombre completo</label>
+              <input type="text" formControlName="nombre" placeholder="Nombre completo">
+            </div>
+
+            <div class="auth-grupo">
+              <label>Correo electrónico</label>
+              <input type="email" formControlName="correo" placeholder="ejemplo@ejemplo.com">
+            </div>
+            
+            <div class="auth-grupo">
+              <label>Contraseña</label>
+              <input type="password" formControlName="contrasena" placeholder="••••••••">
+            </div>
+
+            <!-- CASILLA DE VERIFICACIÓN DE TÉRMINOS Y PRIVACIDAD -->
+            <div class="auth-terminos">
+              <label class="checkbox-label">
+                <input type="checkbox" formControlName="aceptaTerminos" [disabled]="cargando">
+                <span>
+                  Acepto los
+                  <a href="javascript:void(0)" (click)="abrirTerminos()">Términos y Condiciones</a>
+                  y el
+                  <a href="javascript:void(0)" (click)="abrirPrivacidad()">Aviso de Privacidad</a>
+                </span>
+              </label>
+            </div>
+            
+            <!-- Botón deshabilitado si el formulario es inválido (incluye checkbox obligatorio) o está cargando -->
+            <button type="submit" class="btn-auth" [disabled]="cargando || registroForm.invalid">
+              {{ cargando ? 'Registrando...' : 'Crear Cuenta' }}
+            </button>
+          </form>
+        }
         
-        <div class="auth-grupo">
-          <label>Contraseña</label>
-          <input type="password" placeholder="••••••••">
+        <div class="auth-enlace">
+          <a href="#" (click)="alternarVista(); $event.preventDefault()">
+            {{ !mostrarRegistro ? '¿No tienes cuenta? Regístrate aquí' : '¿Ya tienes cuenta? Inicia sesión' }}
+          </a>
         </div>
-        
-        <button type="submit" class="btn-auth" [routerLink]="!mostrarRegistro ? '/dashboard' : null">
-          {{ !mostrarRegistro ? 'Iniciar Sesión' : 'Crear Cuenta' }}
-        </button>
-      </form>
-      
-      <div class="auth-enlace">
-        <a href="#" (click)="alternarVista(); $event.preventDefault()">
-          {{ !mostrarRegistro ? 'Regístrate aquí' : 'Inicia sesión' }}
-        </a>
-      </div>
       </div>
 
     </div>
   </div>
 </div>
+
+<!-- MODAL 1: TÉRMINOS Y CONDICIONES DE USO -->
+@if (modalTerminosAbierto) {
+  <div class="modal-overlay" (click)="cerrarTerminos()">
+    <div class="modal-contenido modal-legal" (click)="$event.stopPropagation()">
+      <div class="modal-cabecera">
+        <h3>Términos y Condiciones de Uso</h3>
+        <button type="button" class="btn-cerrar-x" (click)="cerrarTerminos()" aria-label="Cerrar modal">&times;</button>
+      </div>
+
+      <div class="cuerpo-legal">
+        <div class="seccion-legal">
+          <h4>1. Identificación del Responsable</h4>
+          <p>Este sistema de ERP de Cafetería es operado de manera académica y demostrativa por parte de un alumno del CETI plantel Colomos, destinado a la gestión comercial, ventas y emisión simulada de comprobantes fiscales.</p>
+        </div>
+
+        <div class="seccion-legal">
+          <h4>2. Uso del Sitio y Registro de Usuarios</h4>
+          <p>El acceso a las funcionalidades del sistema (administración, inventario, ventas y facturación) está reservado para usuarios registrados. Cada usuario es responsable de mantener la confidencialidad de sus credenciales de acceso.</p>
+        </div>
+
+        <div class="seccion-legal">
+          <h4>3. Productos y Servicios</h4>
+          <p>Todos los productos, precios, ingredientes y existencias mostrados en el catálogo son administrados desde el módulo de inventario de la plataforma. Los precios mostrados están expresados en Moneda Nacional (MXN) e incluyen los impuestos aplicables.</p>
+        </div>
+
+        <div class="seccion-legal">
+          <h4>4. Privacidad y Comprobantes Fiscales</h4>
+          <p>Al realizar una transacción mediante nuestro método de pago (PayPal Sandbox), el usuario autoriza la generación automática de su comprobante fiscal en formato XML (CFDI 4.0) y su posterior envío a la dirección de correo electrónico vinculada a la cuenta o compra.</p>
+        </div>
+
+        <div class="seccion-legal">
+          <h4>5. Modificaciones y Contacto</h4>
+          <p>Nos reservamos el derecho de actualizar o modificar estos términos en cualquier momento para adaptarlos a mejoras operativas. Para dudas, aclaraciones o soporte sobre el funcionamiento de la plataforma o los comprobantes generados, puede ponerse en contacto con el responsable (correo de contacto: <a href="mailto:a23300765@ceti.mx">a23300765&#64;ceti.mx</a>).</p>
+        </div>
+      </div>
+
+      <div class="modal-acciones">
+        <button type="button" class="btn-primario-cafe" (click)="cerrarTerminos()">Entendido y Aceptar</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- MODAL 2: AVISO DE PRIVACIDAD -->
+@if (modalPrivacidadAbierto) {
+  <div class="modal-overlay" (click)="cerrarPrivacidad()">
+    <div class="modal-contenido modal-legal" (click)="$event.stopPropagation()">
+      <div class="modal-cabecera">
+        <h3>Aviso de Privacidad</h3>
+        <button type="button" class="btn-cerrar-x" (click)="cerrarPrivacidad()" aria-label="Cerrar modal">&times;</button>
+      </div>
+
+      <div class="cuerpo-legal">
+        <div class="seccion-legal">
+          <h4>1. Datos Personales que se Recopilan</h4>
+          <p>Para el correcto funcionamiento de los servicios del ERP, recopilamos únicamente los siguientes datos del usuario y cliente:</p>
+          <ul>
+            <li>Nombre.</li>
+            <li>Dirección de correo electrónico.</li>
+            <li>Identificadores de transacciones asociadas al método de pago.</li>
+          </ul>
+        </div>
+
+        <div class="seccion-legal">
+          <h4>2. Finalidad del Tratamiento de los Datos</h4>
+          <p>Los datos personales recabados serán utilizados de manera exclusiva para las siguientes finalidades:</p>
+          <ul>
+            <li>Procesar y registrar las compras realizadas dentro del sistema.</li>
+            <li>Generar y enviar de forma automática el archivo XML correspondiente a la factura electrónica (CFDI 4.0) a la bandeja de entrada del comprador.</li>
+            <li>Permitir el acceso y la gestión de la cuenta del usuario dentro de la plataforma.</li>
+          </ul>
+          <p class="nota-privacidad">Sus datos no serán vendidos, transferidos ni compartidos con terceros para fines publicitarios o ajenos a la operación de este sistema.</p>
+        </div>
+      </div>
+
+      <div class="modal-acciones">
+        <button type="button" class="btn-primario-cafe" (click)="cerrarPrivacidad()">Entendido y Aceptar</button>
+      </div>
+    </div>
+  </div>
+}

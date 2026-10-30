@@ -3,20 +3,20 @@
     <div class="textos-cabecera">
       <h2>Contabilidad y Finanzas</h2>
     </div>
-    <button class="btn-secundario">Exportar a Excel</button>
+    <button class="btn-secundario" (click)="exportarExcel()">Exportar a Excel</button>
   </div>
 
   <div class="tarjetas-resumen">
     <div class="tarjeta-blanca">
-      <h3>$</h3>
+      <h3>{{ resumen.ingresosMes }}</h3>
       <span>Ingresos del mes</span>
     </div>
     <div class="tarjeta-blanca">
-      <h3>$</h3>
+      <h3>{{ resumen.egresosMes }}</h3>
       <span>Egresos del mes</span>
     </div>
     <div class="tarjeta-blanca">
-      <h3 class="texto-verde">$</h3>
+      <h3 class="texto-verde">{{ resumen.utilidadNeta }}</h3>
       <span>Utilidad neta</span>
     </div>
   </div>
@@ -24,22 +24,12 @@
   <div class="seccion-grafica">
     <h4>Ingresos por semana</h4>
     <div class="contenedor-grafico">
-      <div class="barra-grupo">
-        <div class="barra" style="height: 1%;"></div>
-        <span>Semana 1</span>
-      </div>
-      <div class="barra-grupo">
-        <div class="barra" style="height: 1%;"></div>
-        <span>Semana 2</span>
-      </div>
-      <div class="barra-grupo">
-        <div class="barra" style="height: 1%;"></div>
-        <span>Semana 3</span>
-      </div>
-      <div class="barra-grupo">
-        <div class="barra" style="height: 1%;"></div>
-        <span>Semana 4</span>
-      </div>
+      @for (barra of datosGrafica; track barra.semana) {
+        <div class="barra-grupo">
+          <div class="barra" [style.height.%]="barra.porcentajeAltura"></div>
+          <span>{{ barra.semana }}</span>
+        </div>
+      }
     </div>
   </div>
 
@@ -49,12 +39,32 @@
       <table class="tabla-datos">
         <thead>
           <tr>
-            <th>Reporte</th>
-            <th>Periodo</th>
+            <th>Descripcion</th>
+            <th>Monto</th>
+            <th>Tipo</th>
             <th>Fecha</th>
-            <th>Formato</th>
           </tr>
-        </thead>  
+        </thead>
+        <tbody>
+          @for (rep of reportes; track rep.id) {
+            <tr>
+              <td>{{ rep.nombre }}</td>
+              <td>{{ rep.monto }}</td>
+              <td>
+                <span class="etiqueta {{ rep.tipo === 'ingreso' ? 'verde' : 'roja' }}">
+                  {{ rep.tipo === 'ingreso' ? 'Ingreso' : 'Egreso' }}
+                </span>
+              </td>
+              <td>{{ rep.fecha }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" style="text-align:center; padding:24px; color:#8d6e63;">
+                @if (cargando) { Cargando reportes... } @else { No hay movimientos contables registrados. }
+              </td>
+            </tr>
+          }
+        </tbody>
       </table>
     </div>
   </div>

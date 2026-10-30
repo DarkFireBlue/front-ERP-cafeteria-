@@ -3,29 +3,101 @@
     <div class="textos-cabecera">
       <h2>Compras</h2>
     </div>
-    <button class="btn-primario-cafe" (click)="agregarCompra()">+ Nueva compra</button>
-  </div>
-
-  <div class="grid-productos">
-    @for (item of productos; track item.id) {
-      <div class="tarjeta-producto">
-        <div class="placeholder-imagen">
-          <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-          </svg>
-          <span>Imagen</span>
-        </div>
-        
-        <div class="info-producto">
-          <h4>{{ item.nombre }}</h4>
-          <p>Categoría: {{ item.categoria }}</p>
-        </div>
-
-        <div class="precio-estado">
-          <span class="precio">${{ item.precio }}.00</span>
-          <span class="etiqueta {{ item.claseEtiqueta }}">{{ item.estado }}</span>
-        </div>
-      </div>
+    @if (authService.esAdmin()) {
+      <button class="btn-primario-cafe" (click)="agregarCompra()">+ Nueva compra</button>
     }
   </div>
+
+  <div class="seccion-tabla">
+    <div class="contenedor-tabla">
+      <table class="tabla-datos">
+        <thead>
+          <tr>
+            <th>Folio</th>
+            <th>Proveedor</th>
+            <th>Total</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of compras; track item.folio) {
+            <tr>
+              <td><strong>{{ item.folio }}</strong></td>
+              <td>{{ item.proveedor }}</td>
+              <td>{{ item.total }}</td>
+              <td>{{ item.fecha }}</td>
+              <td><span class="etiqueta verde">{{ item.estado }}</span></td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" style="text-align:center; padding:24px; color:#8d6e63;">
+                @if (cargando) { Cargando historial de compras... } @else { No hay ordenes de compra registradas. }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
+
+<!-- Modal: nueva orden de compra -->
+@if (mostrarModal) {
+  <div class="modal-overlay">
+    <div class="modal-contenido" style="max-width:640px; width:90%;">
+      <div class="modal-cabecera">
+        <h3>Registrar Orden de Compra</h3>
+        <button class="btn-cerrar-x" (click)="cerrarModal()">x</button>
+      </div>
+
+      @if (errorMensaje) {
+        <div style="color:#b71c1c; background:#ffebee; border:1px solid #ffcdd2; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:14px;">
+          {{ errorMensaje }}
+        </div>
+      }
+
+      <div class="form-grupo">
+        <label>Proveedor *</label>
+        <select [(ngModel)]="formProveedorId" name="proveedor" [disabled]="guardando" style="width:100%; padding:8px 12px; border:1px solid #d7ccc8; border-radius:8px; font-size:14px;">
+          <option value="">-- Seleccionar proveedor --</option>
+          @for (p of proveedores; track p.id) {
+            <option [value]="p.id">{{ p.nombre }}</option>
+          }
+        </select>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <label style="font-size:13px; font-weight:600; color:#5d4037; margin-bottom:6px; display:block;">Productos a comprar *</label>
+        @for (linea of detalleCompra; track $index; let i = $index) {
+          <div style="display:flex; gap:8px; margin-bottom:8px; align-items:center;">
+            <select [(ngModel)]="linea.producto_id" [name]="'prod' + i" (ngModelChange)="onProductoLineaSeleccionado(i)" [disabled]="guardando" style="flex:2; padding:7px 10px; border:1px solid #d7ccc8; border-radius:7px; font-size:13px;">
+              <option value="">-- Producto --</option>
+              @for (p of productos; track p.id) {
+                <option [value]="p.id">{{ p.nombre }}</option>
+              }
+            </select>
+            <input type="number" [(ngModel)]="linea.cantidad" [name]="'cant' + i" placeholder="Cant." min="1" [disabled]="guardando" style="flex:1; padding:7px; border:1px solid #d7ccc8; border-radius:7px; font-size:13px;">
+            <input type="number" [(ngModel)]="linea.precio_unitario" [name]="'precio' + i" placeholder="Precio" min="0" step="0.01" [disabled]="guardando" style="flex:1; padding:7px; border:1px solid #d7ccc8; border-radius:7px; font-size:13px;">
+            @if (detalleCompra.length > 1) {
+              <button (click)="eliminarLinea(i)" [disabled]="guardando" style="padding:6px 10px; border:none; border-radius:6px; background:#ffcdd2; color:#b71c1c; cursor:pointer; font-weight:600;">x</button>
+            }
+          </div>
+        }
+        <button (click)="agregarLinea()" [disabled]="guardando" class="btn-secundario" style="margin-top:4px; padding:6px 14px; font-size:12px;">+ Agregar fila</button>
+      </div>
+
+      <div class="form-grupo">
+        <label>Observaciones</label>
+        <input type="text" [(ngModel)]="formObservaciones" name="obs" placeholder="Notas adicionales (opcional)" [disabled]="guardando">
+      </div>
+
+      <div style="display:flex; gap:12px; margin-top:20px;">
+        <button class="btn-primario-cafe" (click)="guardarCompra()" [disabled]="guardando" style="flex:1;">
+          {{ guardando ? 'Registrando...' : 'Registrar Compra' }}
+        </button>
+        <button class="btn-secundario" (click)="cerrarModal()" [disabled]="guardando" style="flex:1;">Cancelar</button>
+      </div>
+    </div>
+  </div>
+}

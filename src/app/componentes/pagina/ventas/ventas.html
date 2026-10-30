@@ -1,25 +1,43 @@
 <div class="modulo-contenedor">
   <div class="cabecera-modulo">
     <div class="textos-cabecera">
-      <h2>Ventas y Facturación</h2>
+      <h2>{{ esAdmin() ? 'Ventas y Facturacion' : 'Mis Compras y Facturacion' }}</h2>
     </div>
-    <button class="btn-primario-cafe" (click)="nuevaVenta()">+ Nueva venta</button>
+    <div style="display: flex; gap: 10px;">
+      <button class="btn-secundario" (click)="abrirModalPaypal()">Pagar con PayPal</button>
+      @if (esAdmin()) {
+        <button class="btn-primario-cafe" (click)="nuevaVenta()">+ Nueva venta local</button>
+      }
+    </div>
   </div>
 
-  <div class="tarjetas-resumen">
-    <div class="tarjeta-blanca">
-      <h3>{{ resumen.ventasHoy }}</h3>
-      <span>Ventas hoy</span>
+  @if (esAdmin()) {
+    <div class="tarjetas-resumen">
+      <div class="tarjeta-blanca">
+        <h3>{{ resumen.ventasHoy }}</h3>
+        <span>Ventas hoy</span>
+      </div>
+      <div class="tarjeta-blanca">
+        <h3>{{ resumen.totalDia }}</h3>
+        <span>Total del dia</span>
+      </div>
+      <div class="tarjeta-blanca">
+        <h3>{{ resumen.ivaAcumulado }}</h3>
+        <span>IVA acumulado</span>
+      </div>
     </div>
-    <div class="tarjeta-blanca">
-      <h3>{{ resumen.totalDia }}</h3>
-      <span>Total del día</span>
+  } @else {
+    <div class="tarjetas-resumen">
+      <div class="tarjeta-blanca">
+        <h3>{{ ventas.length }}</h3>
+        <span>Compras realizadas</span>
+      </div>
+      <div class="tarjeta-blanca">
+        <h3>Facturas XML</h3>
+        <span>Comprobantes fiscales</span>
+      </div>
     </div>
-    <div class="tarjeta-blanca">
-      <h3>{{ resumen.ivaAcumulado }}</h3>
-      <span>IVA acumulado</span>
-    </div>
-  </div>
+  }
 
   <div class="seccion-tabla">
     <div class="contenedor-tabla">
@@ -28,22 +46,36 @@
           <tr>
             <th>Folio</th>
             <th>Cliente</th>
-            <th>Canal</th>
+            <th>Canal / Referencia</th>
             <th>Total</th>
             <th>IVA</th>
-            <th>Factura XML</th>
+            <th>Estado y Factura XML</th>
           </tr>
         </thead>
         <tbody>
           @for (item of ventas; track item.folio) {
             <tr>
-              <td>{{ item.folio }}</td>
+              <td><strong>#{{ item.folio }}</strong></td>
               <td>{{ item.cliente }}</td>
               <td>{{ item.canal }}</td>
-              <td>{{ item.total }}</td>
+              <td><strong>{{ item.total }}</strong></td>
               <td>{{ item.iva }}</td>
               <td>
                 <span class="etiqueta {{ item.claseEstado }}">{{ item.estadoFactura }}</span>
+                @if (item.estadoFactura === 'Facturada') {
+                  <button
+                    class="btn-cancelar"
+                    style="margin-left:8px; padding:4px 10px; font-size:12px; font-weight:600;"
+                    (click)="verFactura(item)">
+                    Ver XML
+                  </button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" style="text-align:center; padding:24px; color:#8d6e63;">
+                No hay ventas o compras registradas en este momento.
               </td>
             </tr>
           }
@@ -52,3 +84,128 @@
     </div>
   </div>
 </div>
+
+<!-- Modal: nueva venta manual -->
+@if (mostrarModal) {
+  <div class="modal-overlay">
+    <div class="modal-contenido">
+      <div class="modal-cabecera">
+        <h3>Registrar Nueva Venta</h3>
+        <button class="btn-cerrar-x" (click)="cerrarModal()">x</button>
+      </div>
+
+      @if (errorMensaje) {
+        <div style="color:#b71c1c; background:#ffebee; border:1px solid #ffcdd2; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:14px;">
+          {{ errorMensaje }}
+        </div>
+      }
+
+      <div class="form-grupo">
+        <label>Nombre del cliente *</label>
+        <input type="text" [(ngModel)]="formNombreCliente" name="nombreCliente" placeholder="Publico general" [disabled]="cargando">
+      </div>
+      <div class="form-grupo">
+        <label>Correo del cliente (para factura)</label>
+        <input type="email" [(ngModel)]="formCorreoCliente" name="correoCliente" placeholder="cliente@ejemplo.com" [disabled]="cargando">
+      </div>
+      <div class="form-grupo">
+        <label>Producto *</label>
+        <select [(ngModel)]="formProductoId" name="producto" (ngModelChange)="onProductoSeleccionado()" [disabled]="cargando" style="width:100%; padding:8px 12px; border:1px solid #d7ccc8; border-radius:8px; font-size:14px;">
+          <option value="">-- Seleccionar --</option>
+          @for (p of productosLista; track p.id) {
+            <option [value]="p.id">{{ p.nombre }} (Stock: {{ p.stock ?? p.cantidad }})</option>
+          }
+        </select>
+      </div>
+      <div class="form-grupo">
+        <label>Cantidad *</label>
+        <input type="number" [(ngModel)]="formCantidad" name="cantidad" placeholder="1" min="1" [disabled]="cargando">
+      </div>
+      <div class="form-grupo">
+        <label>Precio unitario (MXN) *</label>
+        <input type="number" [(ngModel)]="formPrecioUnitario" name="precio" placeholder="0.00" min="0" step="0.01" [disabled]="cargando">
+      </div>
+
+      <div style="display:flex; gap:12px; margin-top:20px;">
+        <button class="btn-primario-cafe" (click)="guardarVenta()" [disabled]="cargando" style="flex:1;">
+          {{ cargando ? 'Registrando...' : 'Registrar Venta' }}
+        </button>
+        <button class="btn-secundario" (click)="cerrarModal()" [disabled]="cargando" style="flex:1;">Cancelar</button>
+      </div>
+
+      <div style="margin-top:14px; border-top:1px solid #efebe9; padding-top:14px; text-align:center;">
+        <p style="font-size:13px; color:#795548; margin-bottom:10px;">O bien, cobrar con PayPal Sandbox:</p>
+        <button class="btn-secundario" (click)="cerrarModal(); abrirModalPaypal();" style="width:100%; font-weight:600;">
+          Pagar con PayPal
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal: pago PayPal en linea -->
+@if (mostrarModalPaypal) {
+  <div class="modal-overlay">
+    <div class="modal-contenido">
+      <div class="modal-cabecera">
+        <h3>Cobro con PayPal Sandbox</h3>
+        <button class="btn-cerrar-x" (click)="cerrarModalPaypal()">x</button>
+      </div>
+
+      <div class="form-grupo">
+        <label>Nombre del cliente *</label>
+        <input type="text" [(ngModel)]="formNombreCliente" name="nombreClientePaypal" placeholder="Nombre completo" [disabled]="procesandoPaypal">
+      </div>
+      <div class="form-grupo">
+        <label>Correo del cliente (recibe la factura XML)</label>
+        <input type="email" [(ngModel)]="formCorreoCliente" name="correoClientePaypal" placeholder="cliente@ejemplo.com" [disabled]="procesandoPaypal">
+      </div>
+      <div class="form-grupo">
+        <label>Producto *</label>
+        <select [(ngModel)]="formProductoId" name="productoPaypal" (ngModelChange)="onProductoSeleccionado()" [disabled]="procesandoPaypal" style="width:100%; padding:8px 12px; border:1px solid #d7ccc8; border-radius:8px; font-size:14px;">
+          <option value="">-- Seleccionar --</option>
+          @for (p of productosLista; track p.id) {
+            <option [value]="p.id">{{ p.nombre }} (${{ p.precio }})</option>
+          }
+        </select>
+      </div>
+      <div class="form-grupo">
+        <label>Cantidad *</label>
+        <input type="number" [(ngModel)]="formCantidad" name="cantidadPaypal" placeholder="1" min="1" [disabled]="procesandoPaypal">
+      </div>
+
+      @if (mensajePaypal) {
+        <div style="padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:14px;"
+          [style.color]="estadoPaypal === 'APROBADO' ? '#2e7d32' : '#b71c1c'"
+          [style.background]="estadoPaypal === 'APROBADO' ? '#e8f5e9' : '#ffebee'"
+          [style.border]="estadoPaypal === 'APROBADO' ? '1px solid #c8e6c9' : '1px solid #ffcdd2'">
+          {{ mensajePaypal }}
+        </div>
+      }
+
+      <button class="btn-primario-cafe" (click)="iniciarPagoPaypal()" [disabled]="procesandoPaypal" style="width:100%; margin-top:8px;">
+        {{ procesandoPaypal ? 'Conectando con PayPal...' : 'Redirigir a PayPal para pagar' }}
+      </button>
+    </div>
+  </div>
+}
+
+<!-- Modal: visor de factura XML -->
+@if (mostrarModalFactura) {
+  <div class="modal-overlay">
+    <div class="modal-contenido" style="max-width:680px; width:90%;">
+      <div class="modal-cabecera">
+        <h3>Factura Electronica CFDI 4.0</h3>
+        <button class="btn-cerrar-x" (click)="cerrarModalFactura()">x</button>
+      </div>
+      <p style="font-size:13px; color:#795548; margin-bottom:14px;">
+        Folio: <strong>{{ facturaSeleccionada?.folio || facturaSeleccionada?.id }}</strong>
+      </p>
+      <textarea readonly style="width:100%; height:260px; font-size:11px; font-family:monospace; border:1px solid #d7ccc8; border-radius:8px; padding:10px; resize:vertical; box-sizing:border-box;">{{ facturaSeleccionada?.archivo_xml }}</textarea>
+      <div style="display:flex; gap:12px; margin-top:16px;">
+        <button class="btn-primario-cafe" (click)="descargarXML()" style="flex:1;">Descargar XML</button>
+        <button class="btn-secundario" (click)="cerrarModalFactura()" style="flex:1;">Cerrar</button>
+      </div>
+    </div>
+  </div>
+}

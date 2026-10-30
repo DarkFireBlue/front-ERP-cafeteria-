@@ -1,3 +1,6 @@
 ﻿node_modules/
 .angular/
 backend-erp/node_modules/
+dist/
+.env
+backend-erp/.env

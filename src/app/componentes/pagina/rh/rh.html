@@ -3,7 +3,9 @@
     <div class="textos-cabecera">
       <h2>Recursos Humanos</h2>
     </div>
-    <button class="btn-primario-cafe" (click)="agregarEmpleado()">+ Agregar empleado</button>
+    @if (authService.esAdmin()) {
+      <button class="btn-primario-cafe" (click)="agregarEmpleado()">+ Agregar empleado</button>
+    }
   </div>
 
   <div class="seccion-tabla">
@@ -25,15 +27,21 @@
               <td>{{ emp.salario }}</td>
               <td>{{ emp.turno }}</td>
             </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" style="text-align:center; padding:24px; color:#8d6e63;">
+                @if (cargando) { Cargando empleados... } @else { No hay empleados registrados. }
+              </td>
+            </tr>
           }
         </tbody>
       </table>
     </div>
   </div>
 
-  <div class="seccion-calendario">
-    <h4>Calendario del mes</h4>
-    <div class="dias-contenedor">
+  <div class="seccion-calendario" style="margin-top: 24px;">
+    <h4 style="font-size: 14px; color: var(--color-texto); margin: 0 0 12px 0;">Calendario del mes</h4>
+    <div class="dias-contenedor" style="flex-wrap: wrap;">
       @for (dia of diasCalendario; track dia.numero) {
         <div class="dia {{ dia.activo ? 'activo' : '' }}">
           {{ dia.numero }}
@@ -42,3 +50,52 @@
     </div>
   </div>
 </div>
+
+<!-- Modal: agregar empleado -->
+@if (mostrarModal) {
+  <div class="modal-overlay">
+    <div class="modal-contenido">
+      <div class="modal-cabecera">
+        <h3>Agregar Empleado</h3>
+        <button class="btn-cerrar-x" (click)="cerrarModal()">x</button>
+      </div>
+
+      @if (errorMensaje) {
+        <div style="color:#b71c1c; background:#ffebee; border:1px solid #ffcdd2; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:14px;">
+          {{ errorMensaje }}
+        </div>
+      }
+
+      <div class="form-grupo">
+        <label>Nombre completo *</label>
+        <input type="text" [(ngModel)]="formNombre" name="nombreEmp" placeholder="Ej: Juan Perez" [disabled]="guardando">
+      </div>
+
+      <div class="form-grupo">
+        <label>Puesto o Cargo *</label>
+        <input type="text" [(ngModel)]="formPuesto" name="puestoEmp" placeholder="Ej: Barista principal" [disabled]="guardando">
+      </div>
+
+      <div class="form-grupo">
+        <label>Turno / Horario *</label>
+        <select [(ngModel)]="formTurno" name="turnoEmp" [disabled]="guardando" style="width:100%; padding:8px 12px; border:1px solid #d7ccc8; border-radius:8px; font-size:14px;">
+          @for (turno of turnosDisponibles; track turno) {
+            <option [value]="turno">{{ turno }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-grupo">
+        <label>Salario Base (MXN / quincenal) *</label>
+        <input type="number" [(ngModel)]="formSalario" name="salarioEmp" placeholder="4500.00" min="0" step="0.01" [disabled]="guardando">
+      </div>
+
+      <div style="display:flex; gap:12px; margin-top:20px;">
+        <button class="btn-primario-cafe" (click)="guardarEmpleado()" [disabled]="guardando" style="flex:1;">
+          {{ guardando ? 'Guardando...' : 'Registrar Empleado' }}
+        </button>
+        <button class="btn-secundario" (click)="cerrarModal()" [disabled]="guardando" style="flex:1;">Cancelar</button>
+      </div>
+    </div>
+  </div>
+}

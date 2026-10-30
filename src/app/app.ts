@@ -1,5 +1,7 @@
-import { Component, signal } from '@angular/core';
+// Componente principal Standalone: gestion de layout y sesion activa
+import { Component, signal, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
+import { AuthService } from './servicios/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -10,14 +12,19 @@ import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/rou
 export class App {
   protected readonly title = signal('ERPcafeteria');
   mostrarLayout = signal(false);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
-  constructor(private router: Router) {
+  constructor() {
     this.router.events.subscribe(() => {
-      this.mostrarLayout.set(this.router.url !== '/');
+      const rutaActual = this.router.url;
+      const tieneSesion = this.authService.estaAutenticado();
+      this.mostrarLayout.set(rutaActual !== '/' && tieneSesion);
     });
   }
 
+  // Cierra la sesion activa y limpia el almacenamiento
   cerrarSesion(): void {
-    this.router.navigate(['/']);
+    this.authService.cerrarSesion();
   }
 }
